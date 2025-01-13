@@ -13,6 +13,7 @@ func All[T any](it Iter[T]) ([]T, error) {
 	if pi, ok := it.(PageIter[T]); ok {
 		return AllPages(context.Background(), pi)
 	}
+	defer it.Close()
 	var out []T
 	for {
 		v, err := it.Next()
@@ -33,6 +34,7 @@ func AllCtx[T any](ctx context.Context, it IterCtx[T]) ([]T, error) {
 	if pi, ok := it.(PageIter[T]); ok {
 		return AllPages(ctx, pi)
 	}
+	defer it.Close()
 	var out []T
 	for {
 		v, err := it.NextCtx(ctx)
@@ -50,6 +52,7 @@ func AllPages[T any](ctx context.Context, it PageIter[T]) ([]T, error) {
 	if s, ok := it.(*sliceIter[T]); ok {
 		return s.buf, nil
 	}
+	defer it.Close()
 	var out []T
 	for {
 		v, err := it.NextPage(ctx)

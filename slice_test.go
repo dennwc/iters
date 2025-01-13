@@ -1,7 +1,10 @@
 package iters_test
 
 import (
+	"context"
 	"testing"
+
+	"github.com/shoenig/test/must"
 
 	. "github.com/dennwc/iters"
 	"github.com/dennwc/iters/testit"
@@ -21,4 +24,18 @@ func TestSlice(t *testing.T) {
 	testit.ExpectIter(t, []int{1, 2, 3}, nil, Slice([]int{1, 2, 3}))
 	testit.ExpectPageIter(t, []int{1, 2, 3}, nil, Slice([]int{1, 2, 3}))
 	testit.ExpectPageIter(t, []int{1, 2, 3, 4}, nil, PageSlice([][]int{{1}, {2, 3}, {4}}))
+}
+
+func TestAllClose(t *testing.T) {
+	it := &CloseIter{}
+	All(it)
+	must.True(t, it.Closed)
+
+	it = &CloseIter{}
+	AllCtx(context.Background(), it)
+	must.True(t, it.Closed)
+
+	it = &CloseIter{}
+	AllPages(context.Background(), it)
+	must.True(t, it.Closed)
 }
