@@ -1,5 +1,7 @@
 package iters
 
+import "io"
+
 // RowsScanner is a minimal interface that sql.Rows implements.
 type RowsScanner interface {
 	Next() bool
@@ -26,7 +28,11 @@ func (it *rowsIter[T]) Close() {
 func (it *rowsIter[T]) Next() (T, error) {
 	var zero T
 	if !it.rows.Next() {
-		return zero, it.rows.Err()
+		err := it.rows.Err()
+		if err == nil {
+			err = io.EOF
+		}
+		return zero, err
 	}
 	return it.scan()
 }
